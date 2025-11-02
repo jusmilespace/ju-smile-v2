@@ -12,7 +12,6 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-he
 .card h2{margin:0 0 12px 0;font-size:18px}
 .grid{display:grid;gap:12px}
 .grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.grid-4{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 .field{display:flex;flex-direction:column;gap:6px}
 .label{font-size:12px;color:var(--muted)}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -30,16 +29,14 @@ input[type="text"],input[type="number"],input[type="date"],select{width:100%;pad
 .list li{display:flex;justify-content:space-between;border-bottom:1px dashed var(--border);padding:6px 0}
 .progress{height:10px;background:#eef2f1;border-radius:99px;overflow:hidden;margin-top:8px;border:1px solid var(--border)}
 .bar{height:100%;background:var(--mint);width:0%}
-.stat{background:#f9fcfb;border:1px solid var(--border);border-radius:12px;padding:12px}
-.stat-number{font-size:20px;font-weight:800}
-.stat-sub{font-size:12px;color:var(--muted)}
 .totals{display:flex;gap:16px;justify-content:flex-end;margin-top:12px;color:#000}
 .muted{color:var(--muted)}
-.item{display:grid;gap:8px;grid-template-columns:1.2fr .6fr .6fr .6fr auto;align-items:end;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff}
+/* 食物/運動輸入行 */
+.item{display:grid;gap:8px;grid-template-columns:1.2fr .6fr .6fr .6fr .6fr .6fr auto;align-items:end;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff}
 .item .col{display:flex;flex-direction:column;gap:6px}
 .item .col .label{font-size:11px}
 .item .actions{display:flex;gap:8px;align-items:center}
-@media (max-width:680px){
+@media (max-width:820px){
   .item{grid-template-columns:1fr 1fr}
 }
 .site-footer{padding:24px;text-align:center;color:var(--muted)}
@@ -55,13 +52,20 @@ input[type="text"],input[type="number"],input[type="date"],select{width:100%;pad
 .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center}
 .modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.35)}
 .modal-card{position:relative;background:#fff;border:1px solid var(--border);border-radius:14px;max-width:560px;width:min(92vw,560px);padding:18px 16px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
-.modal-card h3{margin:.2em 0 .6em 0}
-.modal-card .num{margin:0 0 .6em 1.25em}
-.modal-card code{background:#f1f5f4;border:1px solid var(--border);padding:.1em .35em;border-radius:6px}
 
 /* Toast */
 .toast.hidden{display:none}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:10px;opacity:.95;z-index:60;max-width:90vw}
+
+/* Capsules summary */
+.capsules{display:flex;flex-wrap:wrap;gap:10px}
+.cap{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;border:1px solid;font-weight:600}
+.cap .k{font-weight:800}
+.cap.intake{background:#f3faf6;border-color:#cfe9dd;color:#123}
+.cap.protein{background:#f3faf6;border-color:#cfe9dd;color:#123}
+.cap.water{background:#f3faf6;border-color:#cfe9dd;color:#123}
+.cap.burn{background:#f5f7ff;border-color:#cfe1ff;color:#113}
+.cap.net{background:#fff7ee;border-color:#ffe1ba;color:#6b3d00}
 
 /* Chart */
 .chart-wrap{width:100%;overflow:auto}

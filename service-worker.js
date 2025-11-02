@@ -1,4 +1,4 @@
-const CACHE = 'ju-smile-v2-1';
+const CACHE = 'ju-smile-v2-3';
 self.addEventListener('install', (e)=>{
   e.waitUntil(caches.open(CACHE).then(cache=> cache.addAll([
     './','./index.html','./styles.css','./app.js','./manifest.json',

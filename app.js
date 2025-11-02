@@ -1,4 +1,4 @@
-// Ju Smile 減脂日誌 v2.1 (Weight trend + Tabs)
+// Ju Smile 減脂日誌 v2.3
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
@@ -25,8 +25,9 @@ function saveData(){ localStorage.setItem('juDataV2', JSON.stringify(state.data)
 function getDayObj(dateStr){
   if(!state.data[dateStr]){
     state.data[dateStr] = { water:{goal:2000, logs:[]}, foods:[], workouts:[], weight:null };
-  }else if(!('weight' in state.data[dateStr])){
-    state.data[dateStr].weight = null;
+  }else{
+    if(!state.data[dateStr].water) state.data[dateStr].water = {goal:2000, logs:[]};
+    if(!('weight' in state.data[dateStr])) state.data[dateStr].weight = null;
   }
   return state.data[dateStr];
 }
@@ -38,7 +39,7 @@ function shiftDate(days){
 }
 function sum(arr){ return arr.reduce((a,b)=>a+Number(b||0),0); }
 
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
   if('serviceWorker' in navigator){ navigator.serviceWorker.register('service-worker.js'); }
   initUI(); renderAll();
 });
@@ -76,9 +77,11 @@ function initUI(){
     if(n>0){ addWater(n); $('#waterInput').value=''; }
   });
   $$('button[data-water]').forEach(btn=> btn.addEventListener('click', ()=> addWater(Number(btn.dataset.water))));
-  $('#undoWater').addEventListener('click', undoWater);
-  $('#clearWater').addEventListener('click', ()=>{ const d=getDayObj(state.date); d.water.logs=[]; saveData(); renderWater(); });
-  $('#waterGoal').addEventListener('change', e=>{ const v = Math.max(0, Number(e.target.value||0)); getDayObj(state.date).water.goal = v||2000; saveData(); renderWater(); });
+  $('#waterGoal').addEventListener('change', e=>{
+    const v = Math.max(0, Number(e.target.value||0));
+    const d = getDayObj(state.date);
+    d.water.goal = v || 2000; saveData(); renderWater();
+  });
 
   // 食物 / 運動
   $('#addFood').addEventListener('click', ()=> addFoodItem());
@@ -101,27 +104,28 @@ function initUI(){
 }
 
 // 喝水
-function addWater(amount){ const d = getDayObj(state.date); d.water.logs.push(amount); saveData(); renderWater(); }
-function undoWater(){ const d = getDayObj(state.date); d.water.logs.pop(); saveData(); renderWater(); }
+function addWater(amount){
+  const d = getDayObj(state.date);
+  d.water.logs.push(amount);
+  saveData();
+  renderWater();
+}
 function renderWater(){
   const d = getDayObj(state.date);
   $('#waterGoal').value = d.water.goal || 2000;
   const total = sum(d.water.logs);
-  $('#waterProgress').textContent = `${total} / ${d.water.goal||2000}`;
-  $('#waterToday').textContent = `${total} ml`;
-  const pct = Math.min(100, Math.round((total/(d.water.goal||2000))*100));
-  $('#waterBar').style.width = pct + '%';
+  $('#waterBar').style.width = Math.min(100, Math.round((total/(d.water.goal||2000))*100)) + '%';
   const ul = $('#waterList'); ul.innerHTML = '';
   d.water.logs.forEach((ml, i)=>{
     const li = document.createElement('li');
-    li.innerHTML = `<span>${i+1}. ${ml} ml</span><button class="btn-ghost" data-del="${i}">刪除</button>`;
+    li.textContent = `${i+1}. ${ml} ml`;
     ul.appendChild(li);
   });
-  $$('#waterList [data-del]').forEach(btn=> btn.addEventListener('click', ()=>{ d.water.logs.splice(Number(btn.dataset.del),1); saveData(); renderWater(); }));
+  renderCapsules();
 }
 
 // 食物
-function addFoodItem(item){
+function addFoodItem(it){
   const wrap = $('#foodList');
   const node = document.createElement('div');
   node.className = 'item';
@@ -142,30 +146,40 @@ function addFoodItem(item){
       <label class="label">蛋白質 / 份 (g)</label>
       <input type="number" min="0" step="0.1" placeholder="31" class="food-protein">
     </div>
+    <div class="col">
+      <label class="label">碳水 / 份 (g)</label>
+      <input type="number" min="0" step="0.1" placeholder="0" class="food-carb">
+    </div>
+    <div class="col">
+      <label class="label">脂肪 / 份 (g)</label>
+      <input type="number" min="0" step="0.1" placeholder="0" class="food-fat">
+    </div>
     <div class="actions">
-      <button class="btn-ghost save">保存</button>
-      <button class="btn-ghost del">刪除</button>
+      <button class="btn-ghost save" type="button">保存</button>
+      <button class="btn-ghost del" type="button">刪除</button>
     </div>`;
   wrap.appendChild(node);
-  const setFromItem = (it)=>{
-    if(!it) return;
+  if(it){
     node.querySelector('.food-name').value = it.name||'';
     node.querySelector('.food-serv').value = it.serv||1;
     node.querySelector('.food-kcal').value = it.kcal||0;
     node.querySelector('.food-protein').value = it.protein||0;
-  };
-  setFromItem(item);
+    node.querySelector('.food-carb').value = it.carb||0;
+    node.querySelector('.food-fat').value = it.fat||0;
+  }
 
   node.querySelector('.save').addEventListener('click', ()=>{
-    const it = {
+    const item = {
       name: node.querySelector('.food-name').value.trim(),
       serv: Number(node.querySelector('.food-serv').value||0),
       kcal: Number(node.querySelector('.food-kcal').value||0),
       protein: Number(node.querySelector('.food-protein').value||0),
+      carb: Number(node.querySelector('.food-carb').value||0),
+      fat: Number(node.querySelector('.food-fat').value||0),
     };
     const d = getDayObj(state.date);
     const idx = Array.from(wrap.children).indexOf(node);
-    d.foods[idx] = it; saveData(); renderFoodTotals();
+    d.foods[idx] = item; saveData(); renderFoodTotals();
   });
   node.querySelector('.del').addEventListener('click', ()=>{
     const d = getDayObj(state.date);
@@ -181,11 +195,17 @@ function renderFoods(){
 }
 function renderFoodTotals(){
   const d = getDayObj(state.date);
-  const totals = d.foods.reduce((acc,it)=>{ acc.kcal += (it.kcal||0)*(it.serv||0); acc.protein += (it.protein||0)*(it.serv||0); return acc; }, {kcal:0,protein:0});
+  const totals = d.foods.reduce((acc,it)=>{
+    acc.kcal += (it.kcal||0)*(it.serv||0);
+    acc.protein += (it.protein||0)*(it.serv||0);
+    acc.carb += (it.carb||0)*(it.serv||0);
+    acc.fat += (it.fat||0)*(it.serv||0);
+    return acc;
+  }, {kcal:0,protein:0,carb:0,fat:0});
   $('#calTotal').textContent = Math.round(totals.kcal);
   $('#proteinTotal').textContent = (Math.round(totals.protein*10)/10).toFixed(1);
-  $('#proteinToday').textContent = `${(Math.round(totals.protein*10)/10).toFixed(1)} g`;
   renderNetCalories();
+  renderCapsules();
 }
 
 // 運動
@@ -211,18 +231,16 @@ function addWorkoutItem(item){
       <input type="text" placeholder="RPE 6-7" class="wo-note">
     </div>
     <div class="actions">
-      <button class="btn-ghost save">保存</button>
-      <button class="btn-ghost del">刪除</button>
+      <button class="btn-ghost save" type="button">保存</button>
+      <button class="btn-ghost del" type="button">刪除</button>
     </div>`;
   wrap.appendChild(node);
-  const setFromItem = (it)=>{
-    if(!it) return;
-    node.querySelector('.wo-name').value = it.name||'';
-    node.querySelector('.wo-min').value = it.min||0;
-    node.querySelector('.wo-kcal').value = it.kcal||0;
-    node.querySelector('.wo-note').value = it.note||'';
-  };
-  setFromItem(item);
+  if(item){
+    node.querySelector('.wo-name').value = item.name||'';
+    node.querySelector('.wo-min').value = item.min||0;
+    node.querySelector('.wo-kcal').value = item.kcal||0;
+    node.querySelector('.wo-note').value = item.note||'';
+  }
 
   node.querySelector('.save').addEventListener('click', ()=>{
     const it = {
@@ -254,16 +272,48 @@ function renderWorkoutTotals(){
   $('#burnTotal').textContent = Math.round(totalK);
   $('#durationTotal').textContent = Math.round(totalM);
   renderNetCalories();
+  renderCapsules();
 }
 
 function renderNetCalories(){
   const d = getDayObj(state.date);
   const kcalIn = d.foods.reduce((acc,it)=> acc + (it.kcal||0)*(it.serv||0), 0);
   const kcalOut = sum(d.workouts.map(w=> w.kcal||0));
-  $('#netCalories').textContent = Math.round(kcalIn - kcalOut);
+  const el = $('#netCalories');
+  if(el) el.textContent = Math.round(kcalIn - kcalOut);
+  return {kcalIn, kcalOut, net: Math.round(kcalIn - kcalOut)};
 }
 
-// 匯出 / 匯入（含提示）
+// 今日概況膠囊
+function renderCapsules(){
+  const d = getDayObj(state.date);
+  const calIn = d.foods.reduce((acc,it)=> acc + (it.kcal||0)*(it.serv||0), 0);
+  const proteinIn = d.foods.reduce((acc,it)=> acc + (it.protein||0)*(it.serv||0), 0);
+  const carbIn = d.foods.reduce((acc,it)=> acc + (it.carb||0)*(it.serv||0), 0);
+  const fatIn = d.foods.reduce((acc,it)=> acc + (it.fat||0)*(it.serv||0), 0);
+  const burn = sum(d.workouts.map(w=> w.kcal||0));
+  const water = sum(d.water.logs);
+  const net = Math.round(calIn - burn);
+  const wrap = $('#todayCapsules');
+  wrap.innerHTML = '';
+  const items = [
+    {cls:'intake', label:'攝取', val:`${Math.round(calIn)} kcal`},
+    {cls:'protein', label:'蛋白', val:`${(Math.round(proteinIn*10)/10).toFixed(1)} g`},
+    {cls:'protein', label:'碳水', val:`${(Math.round(carbIn*10)/10).toFixed(1)} g`},
+    {cls:'protein', label:'脂肪', val:`${(Math.round(fatIn*10)/10).toFixed(1)} g`},
+    {cls:'burn', label:'運動消耗', val:`${Math.round(burn)} kcal`},
+    {cls:'net', label:'淨熱量', val:`${net} kcal`},
+    {cls:'water', label:'喝水', val:`${water} ml`},
+  ];
+  items.forEach(it=>{
+    const el = document.createElement('div');
+    el.className = `cap ${it.cls}`;
+    el.innerHTML = `${it.label}：<span class="k">${it.val}</span>`;
+    wrap.appendChild(el);
+  });
+}
+
+// 匯出 / 匯入
 function exportJSON(){
   const data = JSON.stringify(state.data, null, 2);
   const blob = new Blob([data], {type:'application/json'});
@@ -312,40 +362,33 @@ function showToast(msg){
 // 渲染
 function renderAll(){
   $('#datePicker').value = state.date;
-  // 體重欄填入當日已存值
   const w = getDayObj(state.date).weight;
   $('#weightInput').value = (w ?? '') === null ? '' : (w ?? '');
   renderWater(); renderFoods(); renderWorkouts();
-  // 如果當前是報表分頁，也更新圖
   const reportPanelHidden = $(`.tab-panel[data-panel="report"]`).classList.contains('hidden');
   if(!reportPanelHidden) renderWeightChart();
 }
 
-// ====== Report: Weight Trend (Canvas) ======
+// Report: Weight Trend
 function renderWeightChart(){
   const days = collectWeightSeries(state.reportRange);
   const canvas = $('#weightChart');
   const ctx = canvas.getContext('2d');
-  // Resize for device pixel ratio
   const dpr = window.devicePixelRatio || 1;
   const cssW = canvas.clientWidth || 900;
   const cssH = canvas.clientHeight || 360;
   canvas.width = cssW * dpr;
   canvas.height = cssH * dpr;
   ctx.scale(dpr, dpr);
-  // Clear
   ctx.clearRect(0,0,cssW,cssH);
-  // Guard
   if(days.length === 0 || days.every(d=> d.weight==null)){
     ctx.fillStyle = '#6b7280'; ctx.font = '14px system-ui';
     ctx.fillText('沒有可顯示的體重資料。請在「日誌」分頁輸入體重。', 16, 28);
     return;
   }
-  // Padding
   const pad = {l:48, r:16, t:16, b:36};
   const plotW = cssW - pad.l - pad.r;
   const plotH = cssH - pad.t - pad.b;
-  // Build arrays
   const xs = days.map(d=> d.date);
   const weights = days.map(d=> d.weight);
   const validWeights = weights.filter(v=> typeof v==='number' && !isNaN(v));
@@ -362,7 +405,7 @@ function renderWeightChart(){
   ctx.lineTo(pad.l + plotW, pad.t + plotH);
   ctx.stroke();
 
-  // Y ticks (5)
+  // Y ticks
   ctx.fillStyle = '#6b7280';
   ctx.font = '12px system-ui';
   for(let i=0;i<=5;i++){
@@ -374,7 +417,7 @@ function renderWeightChart(){
     ctx.fillText(yVal.toFixed(1), 8, y+4);
   }
 
-  // X labels (about 6 ticks)
+  // X labels
   const tickCount = Math.min(6, xs.length);
   for(let i=0;i<tickCount;i++){
     const idx = Math.round(i*(xs.length-1)/(tickCount-1||1));
@@ -407,23 +450,9 @@ function renderWeightChart(){
       ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
     }
   });
-
-  // Min/Max labels
-  const minIdx = weights.indexOf(Math.min(...validWeights));
-  const maxIdx = weights.indexOf(Math.max(...validWeights));
-  function labelAt(idx, text, bg='#fff'){
-    const x = pad.l + (idx/(xs.length-1||1)) * plotW;
-    const wv = weights[idx];
-    const y = pad.t + plotH - ((wv - minY)/rangeY) * plotH;
-    ctx.fillStyle = '#111'; ctx.font='12px system-ui';
-    ctx.fillText(text, x+6, y-6);
-  }
-  if(minIdx>=0) labelAt(minIdx, `最低 ${weights[minIdx]} kg`);
-  if(maxIdx>=0) labelAt(maxIdx, `最高 ${weights[maxIdx]} kg`);
 }
 
 function collectWeightSeries(lastNDays){
-  // Collect last N days (including today)
   const today = new Date();
   const out = [];
   for(let i=lastNDays-1;i>=0;i--){

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Ju Smile 減脂日誌 v2.1</title>
+  <title>Ju Smile 減脂日誌 v2.3</title>
   <meta name="theme-color" content="#97d0ba" />
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -17,20 +17,18 @@
       <div class="name">Ju Smile 減脂日誌</div>
     </div>
     <nav class="toolbar">
-      <button id="btnSyncHelp" class="btn-ghost">跨裝置同步說明</button>
-      <button id="btnExport" class="btn-ghost">匯出</button>
-      <button id="btnImport" class="btn-ghost">匯入</button>
+      <button id="btnSyncHelp" class="btn-ghost" type="button">跨裝置同步說明</button>
+      <button id="btnExport" class="btn-ghost" type="button">匯出</button>
+      <button id="btnImport" class="btn-ghost" type="button">匯入</button>
       <input type="file" id="importFile" accept="application/json" hidden />
     </nav>
   </header>
 
-  <!-- Tabs -->
   <div class="tabs wrap">
-    <button class="tab active" data-tab="log">日誌</button>
-    <button class="tab" data-tab="report">報表</button>
+    <button class="tab active" data-tab="log" type="button">日誌</button>
+    <button class="tab" data-tab="report" type="button">報表</button>
   </div>
 
-  <!-- LOG TAB -->
   <main class="wrap tab-panel" data-panel="log">
     <section class="card">
       <h2>📅 選擇日期</h2>
@@ -42,16 +40,16 @@
         <div class="field row-gap-s">
           <span class="label">快速切換</span>
           <div class="row">
-            <button class="btn" data-shift="-1" id="prevDay">前一天</button>
-            <button class="btn" data-shift="0" id="todayBtn">今天</button>
-            <button class="btn" data-shift="1" id="nextDay">後一天</button>
+            <button class="btn" data-shift="-1" id="prevDay" type="button">前一天</button>
+            <button class="btn" data-shift="0" id="todayBtn" type="button">今天</button>
+            <button class="btn" data-shift="1" id="nextDay" type="button">後一天</button>
           </div>
         </div>
         <label class="field">
           <span class="label">體重（kg）</span>
           <div class="row">
             <input type="number" id="weightInput" min="0" step="0.1" placeholder="今天量的體重">
-            <button class="btn" id="saveWeight">保存</button>
+            <button class="btn" id="saveWeight" type="button">保存</button>
           </div>
         </label>
       </div>
@@ -59,30 +57,23 @@
 
     <section class="card">
       <h2>💧 喝水追蹤</h2>
-      <div class="grid grid-4">
-        <div class="stat">
-          <div class="stat-number" id="waterProgress">0 / 2000</div>
-          <div class="stat-sub">今日總量 (ml)</div>
-        </div>
+      <div class="grid grid-3">
+        <label class="field">
+          <span class="label">每日目標（ml）</span>
+          <input type="number" id="waterGoal" min="0" step="100" placeholder="預設 2000" />
+        </label>
         <label class="field">
           <span class="label">自訂輸入 (ml)</span>
           <div class="row">
             <input type="number" id="waterInput" min="0" step="50" placeholder="輸入數量" />
-            <button class="btn" id="addWater">加入</button>
+            <button class="btn" id="addWater" type="button">加入</button>
           </div>
         </label>
         <div class="field">
           <span class="label">快速加入</span>
           <div class="row">
-            <button class="btn" data-water="200">+200</button>
-            <button class="btn" data-water="500">+500</button>
-          </div>
-        </div>
-        <div class="field">
-          <span class="label">操作</span>
-          <div class="row">
-            <button class="btn-ghost" id="undoWater">復原最後一筆</button>
-            <button class="btn-ghost" id="clearWater">清空今日</button>
+            <button class="btn" data-water="200" type="button">+200</button>
+            <button class="btn" data-water="500" type="button">+500</button>
           </div>
         </div>
       </div>
@@ -98,7 +89,7 @@
     <section class="card">
       <h2>🍱 食物紀錄</h2>
       <div id="foodList" class="stack gap-s"></div>
-      <button id="addFood" class="btn wide">新增食物</button>
+      <button id="addFood" class="btn wide" type="button">新增食物</button>
       <div class="totals">
         <div>熱量：<strong id="calTotal">0</strong> kcal</div>
         <div>蛋白質：<strong id="proteinTotal">0</strong> g</div>
@@ -108,7 +99,7 @@
     <section class="card">
       <h2>🏃‍♀️ 運動紀錄</h2>
       <div id="workoutList" class="stack gap-s"></div>
-      <button id="addWorkout" class="btn wide">新增運動</button>
+      <button id="addWorkout" class="btn wide" type="button">新增運動</button>
       <div class="totals">
         <div>消耗熱量：<strong id="burnTotal">0</strong> kcal</div>
         <div>總時長：<strong id="durationTotal">0</strong> 分鐘</div>
@@ -116,34 +107,20 @@
     </section>
 
     <section class="card">
-      <h2>📊 當日彙總</h2>
-      <div class="grid grid-3">
-        <div class="stat">
-          <div class="stat-number" id="netCalories">0</div>
-          <div class="stat-sub">淨熱量（攝入-消耗）</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number" id="proteinToday">0 g</div>
-          <div class="stat-sub">蛋白質</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number" id="waterToday">0 ml</div>
-          <div class="stat-sub">喝水</div>
-        </div>
-      </div>
-      <p class="muted">※ 所有資料皆以日期為鍵存於瀏覽器 localStorage。跨裝置請用右上角「匯出/匯入」或閱讀「跨裝置同步說明」。</p>
+      <h2>🧾 今日概況</h2>
+      <div class="capsules" id="todayCapsules"></div>
+      <p class="muted">※ 資料皆以日期為鍵存於瀏覽器 localStorage。跨裝置請用右上角「匯出/匯入」或閱讀「跨裝置同步說明」。</p>
     </section>
   </main>
 
-  <!-- REPORT TAB -->
   <section class="wrap tab-panel hidden" data-panel="report">
     <section class="card">
       <h2>📈 體重趨勢</h2>
       <div class="row">
         <div class="btn-group">
-          <button class="btn-ghost sm" data-range="7">最近 7 天</button>
-          <button class="btn-ghost sm" data-range="30">最近 30 天</button>
-          <button class="btn-ghost sm" data-range="90">最近 90 天</button>
+          <button class="btn-ghost sm" data-range="7" type="button">最近 7 天</button>
+          <button class="btn-ghost sm" data-range="30" type="button">最近 30 天</button>
+          <button class="btn-ghost sm" data-range="90" type="button">最近 90 天</button>
         </div>
       </div>
       <div class="chart-wrap">
@@ -153,7 +130,6 @@
     </section>
   </section>
 
-  <!-- datalist -->
   <datalist id="foodMaster">
     <option value="雞胸肉"></option>
     <option value="雞蛋"></option>
@@ -173,28 +149,25 @@
     <option value="瑜伽"></option>
   </datalist>
 
-  <!-- Sync Help Modal -->
   <div id="syncModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="syncTitle">
     <div class="modal-backdrop" data-close></div>
     <div class="modal-card">
       <h3 id="syncTitle">跨裝置同步（手動）</h3>
       <ol class="num">
-        <li><strong>在裝置 A</strong>（例如電腦）點右上角 <em>匯出</em>，下載 <code>ju-smile-v2-data-YYYY-MM-DD.json</code>。</li>
-        <li>用你習慣的方式把檔案傳到 <strong>裝置 B</strong>（AirDrop / LINE / WhatsApp / 雲端硬碟）。</li>
-        <li><strong>在裝置 B</strong> 打開本 App → 點右上角 <em>匯入</em> → 選剛剛的 JSON 檔。</li>
+        <li><strong>在裝置 A</strong> 點右上角 <em>匯出</em>，下載 <code>ju-smile-v2-data-YYYY-MM-DD.json</code>。</li>
+        <li>把檔案傳到 <strong>裝置 B</strong>（AirDrop / LINE / WhatsApp / 雲端硬碟）。</li>
+        <li><strong>在裝置 B</strong> 打開本 App → 點 <em>匯入</em> → 選 JSON 檔。</li>
       </ol>
-      <p class="muted">提示：你可以固定每週日匯出一次，養成備份與同步的習慣。</p>
       <div class="row end">
-        <button class="btn-ghost" data-close>了解了</button>
+        <button class="btn-ghost" data-close type="button">了解了</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <footer class="site-footer">
-    <small>© Ju Smile 減脂日誌 v2.1 · 支援離線使用</small>
+    <small>© Ju Smile 減脂日誌 v2.3 · 支援離線使用</small>
   </footer>
 
   <script src="app.js"></script>
