@@ -1,0 +1,68 @@
+:root{--mint:#97d0ba;--ink:#122;--bg:#f7faf9;--card:#fff;--border:#e9ecef;--muted:#6b7280}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.45;background:var(--bg);color:var(--ink)}
+.site-header{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:10px 16px}
+.brand{display:flex;align-items:center;gap:8px}
+.logo{width:28px;height:28px;background:var(--mint);border-radius:50%}
+.name{font-weight:700}
+.toolbar{display:flex;gap:8px;align-items:center}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.card h2{margin:0 0 12px 0;font-size:18px}
+.grid{display:grid;gap:12px}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.grid-4{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.field{display:flex;flex-direction:column;gap:6px}
+.label{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row.end{justify-content:flex-end}
+.stack{display:flex;flex-direction:column}
+.gap-s{gap:8px}
+.mt-s{margin-top:8px}
+.btn,.btn-ghost{appearance:none;border:0;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+.btn{background:var(--mint);color:#fff}
+.btn.sm,.btn-ghost.sm{padding:6px 10px;border-radius:8px;font-weight:600;font-size:14px}
+.btn.wide{width:100%}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
+input[type="text"],input[type="number"],input[type="date"],select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#fff}
+.list{margin:6px 0 0 0;padding:0;list-style:none}
+.list li{display:flex;justify-content:space-between;border-bottom:1px dashed var(--border);padding:6px 0}
+.progress{height:10px;background:#eef2f1;border-radius:99px;overflow:hidden;margin-top:8px;border:1px solid var(--border)}
+.bar{height:100%;background:var(--mint);width:0%}
+.stat{background:#f9fcfb;border:1px solid var(--border);border-radius:12px;padding:12px}
+.stat-number{font-size:20px;font-weight:800}
+.stat-sub{font-size:12px;color:var(--muted)}
+.totals{display:flex;gap:16px;justify-content:flex-end;margin-top:12px;color:#000}
+.muted{color:var(--muted)}
+.item{display:grid;gap:8px;grid-template-columns:1.2fr .6fr .6fr .6fr auto;align-items:end;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff}
+.item .col{display:flex;flex-direction:column;gap:6px}
+.item .col .label{font-size:11px}
+.item .actions{display:flex;gap:8px;align-items:center}
+@media (max-width:680px){
+  .item{grid-template-columns:1fr 1fr}
+}
+.site-footer{padding:24px;text-align:center;color:var(--muted)}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border)}
+.tab{appearance:none;background:transparent;border:0;padding:10px 14px;border-radius:10px 10px 0 0;font-weight:700;color:#334}
+.tab.active{background:#fff;border:1px solid var(--border);border-bottom-color:#fff}
+.tab-panel.hidden{display:none}
+
+/* Modal */
+.modal.hidden{display:none}
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.35)}
+.modal-card{position:relative;background:#fff;border:1px solid var(--border);border-radius:14px;max-width:560px;width:min(92vw,560px);padding:18px 16px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.modal-card h3{margin:.2em 0 .6em 0}
+.modal-card .num{margin:0 0 .6em 1.25em}
+.modal-card code{background:#f1f5f4;border:1px solid var(--border);padding:.1em .35em;border-radius:6px}
+
+/* Toast */
+.toast.hidden{display:none}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:10px;opacity:.95;z-index:60;max-width:90vw}
+
+/* Chart */
+.chart-wrap{width:100%;overflow:auto}
+canvas{max-width:100%}
